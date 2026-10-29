@@ -52,7 +52,7 @@ ol{padding-left:20px;margin:6px 0 0;color:var(--muted);font-size:14px}
 
 <div id="app" class="hide">
 <h1>Harga &amp; stok</h1>
-<p class="n">Atur harga per 1M (Rupiah) dan stok tersedia (dalam M). 1B = 1000M. Toko dengan stok di bawah 10M otomatis tampil "Habis" di website.</p>
+<p class="n">Atur harga per 1M (Rupiah) dan stok tersedia (dalam M). 1B = 1000M. Toko dengan stok di bawah 30M otomatis tampil "Habis" di website.</p>
 <div id="list"></div>
 <div class="row" style="margin-bottom:14px">
 <button class="btn" id="save">Simpan draft</button>
@@ -117,7 +117,7 @@ if(data.length>1)data=data.slice(0,1);
 var L=$("list");L.innerHTML="";
 data.forEach(function(x,i){
 var c=document.createElement("div");c.className="card";
-var low=(Number(x.stock)||0)<10;
+var low=(Number(x.stock)||0)<30;
 c.innerHTML="<div class='top'><b>Toko "+(i+1)+"</b><span class='badge"+(low?" low":"")+"'>Stok: "+fmt(Number(x.stock)||0)+(low?" (Habis)":"")+"</span></div>"+
 "<label>Nama toko</label><input type='text' data-k='n' data-i='"+i+"'>"+
 "<div class='g'><div><label>Harga per 1M (Rp)</label><input type='number' min='0' step='50' inputmode='numeric' data-k='rate' data-i='"+i+"'></div>"+
@@ -133,7 +133,7 @@ $("list").addEventListener("input",function(e){
 var t=e.target,i=t.getAttribute("data-i");if(i===null)return;
 var k=t.getAttribute("data-k");
 data[i][k]=k==="active"?t.checked:(k==="n"?t.value:t.value);
-if(k==="stock"){var b=t.closest(".card").querySelector(".badge"),v=Number(t.value)||0;b.textContent="Stok: "+fmt(v)+(v<10?" (Habis)":"");b.className="badge"+(v<10?" low":"")}
+if(k==="stock"){var b=t.closest(".card").querySelector(".badge"),v=Number(t.value)||0;b.textContent="Stok: "+fmt(v)+(v<30?" (Habis)":"");b.className="badge"+(v<30?" low":"")}
 $("js").value=out()});
 $("list").addEventListener("click",function(e){
 var d=e.target.getAttribute("data-del");if(d===null)return;
