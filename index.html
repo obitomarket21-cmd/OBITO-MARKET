@@ -65,6 +65,9 @@ details p{color:var(--muted);margin:8px 0 0}
 footer{border-top:1px solid var(--line);padding:24px 20px 36px;text-align:center;color:var(--muted);font-size:13px}
 .note{font-size:13px;color:var(--muted);margin-top:10px}
 .stk{font-size:13px;color:var(--muted);margin-top:6px}
+.stockbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:14px;color:var(--muted)}
+.stockbar b{font-size:20px;color:var(--ok);letter-spacing:-.02em}
+.stockbar.out b{color:var(--err)}
 </style>
 </head>
 <body>
@@ -85,6 +88,7 @@ footer{border-top:1px solid var(--line);padding:24px 20px 36px;text-align:center
 <ol class="steps" id="steps"><li class="on">1 Akun</li><li>2 Jumlah</li><li>3 Bayar</li></ol>
 
 <div id="p1">
+<div class="stockbar" id="stockbar" aria-live="polite"><span>Money tersedia · min. beli 30M</span><b id="stockAll">…</b></div>
 <h2>Akun Minecraft tujuan</h2>
 <div class="seg" role="group" aria-label="Edisi game">
 <button id="bJava" aria-pressed="true">Java</button><button id="bBed" aria-pressed="false">Bedrock</button>
@@ -97,7 +101,7 @@ footer{border-top:1px solid var(--line);padding:24px 20px 36px;text-align:center
 <div id="p2" class="hide">
 <h2>Jumlah money</h2>
 <label for="qty">Jumlah (dalam M)</label>
-<input id="qty" type="number" min="10" max="5000" step="10" value="100" inputmode="numeric">
+<input id="qty" type="number" min="30" max="5000" step="10" value="100" inputmode="numeric">
 <div class="stk" id="stk"></div>
 <div class="chips" id="chips"></div>
 <label for="ref">Kode referral (opsional)</label>
@@ -155,7 +159,7 @@ footer{border-top:1px solid var(--line);padding:24px 20px 36px;text-align:center
 (function(){
 /* Harga & stok diatur owner lewat admin.html -> stores.json. Nilai di bawah hanya cadangan. */
 var stores=[{n:"Toko Utama",rate:1500,stock:8200,active:true}];
-var MIN=10,MAXO=5000;
+var MIN=30,MAXO=5000;
 var S={ed:"java",acc:null,st:0,qty:100};
 var $=function(i){return document.getElementById(i)};
 var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
@@ -237,9 +241,13 @@ if(!valid())return;
 var t="Halo owner, saya mau order money DonutSMP.\nKode order: "+$("oid").textContent+"\nAkun: "+S.acc+" ("+(S.ed==="java"?"Java":"Bedrock")+")"+(stores.length>1?"\nToko: "+stores[S.st].n:"")+"\nJumlah: "+S.qty+"M"+(bonus()?" (+"+bonus()+"M bonus referral)":"")+"\nTotal: "+rp(total())+($("ref").value.trim()?"\nKode referral: "+$("ref").value.trim():"")+"\nMohon info cara pembayarannya.";
 $("wa").href="https://wa.me/6285785425586?text="+encodeURIComponent(t)});
 
+function showStock(){
+var t=0;stores.forEach(function(s){if(s.stock>=MIN)t+=s.stock});
+$("stockAll").textContent=t>0?fmt(t):"Habis";
+$("stockbar").className="stockbar"+(t>0?"":" out")}
 function apply(list){
 stores=list.filter(function(x){return x&&x.active!==false}).map(function(x){return{n:String(x.n||"Toko"),rate:Math.max(0,Number(x.rate)||0),stock:Math.max(0,Number(x.stock)||0)}});
-pick();drawStores();upd()}
+pick();drawStores();upd();showStock()}
 apply(stores);
 fetch("stores.json?"+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j&&j.stores)apply(j.stores)}).catch(function(){});
 })();
