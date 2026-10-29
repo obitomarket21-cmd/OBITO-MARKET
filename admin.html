@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel Owner — OBITO MARKET</title>
+<style>
+:root{--bg:#f4efec;--surface:#fff;--ink:#1a1112;--muted:#6a5a5c;--line:#e0d3d0;--accent:#c4161c;--accent-ink:#fff;--hero:#120c0d;--ok:#12805c;--err:#c0392b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0d0809;--surface:#1a1112;--ink:#f3e9e6;--muted:#b9a3a0;--line:#3a2325;--accent:#ff6a3d;--accent-ink:#1a0500;--ok:#4fd1a1;--err:#ff8a7a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:var(--hero);color:#f3e9e6;padding:14px 16px;font-weight:800;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5}
+.ring{width:20px;height:20px;border-radius:50%;border:5px solid #e11d24;background:#120c0d}
+header span.s{margin-left:auto;font-weight:500;font-size:13px;color:#d4b8b3}
+main{max-width:760px;margin:auto;padding:16px 16px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+h1{font-size:22px;margin:6px 0 4px;letter-spacing:-.02em}
+p.n{color:var(--muted);font-size:14px;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:13px;margin:10px 0 4px}
+input[type=text],input[type=number],input[type=password]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.del{background:transparent;color:var(--err);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.top{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.sw{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin:0}
+.sw input{width:20px;height:20px}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+.badge{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.badge.low{color:var(--err);border-color:var(--err)}
+.msg{min-height:20px;font-size:14px;margin-top:8px}.ok{color:var(--ok)}.err{color:var(--err)}
+.hide{display:none}
+textarea{width:100%;min-height:150px;font:13px/1.4 ui-monospace,Menlo,monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
+ol{padding-left:20px;margin:6px 0 0;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><span class="ring"></span>OWNER PANEL<span class="s" id="who"></span></header>
+<main>
+
+<div id="login" class="card">
+<h1>Masuk owner</h1>
+<p class="n">Masukkan password panel.</p>
+<label for="pw">Password</label>
+<input id="pw" type="password" autocomplete="current-password">
+<div class="row" style="margin-top:12px"><button class="btn" id="go">Masuk</button></div>
+<div class="msg err" id="lm"></div>
+<p class="hint">Password pertama kali: <b>obito123</b>. Segera ganti setelah masuk.</p>
+</div>
+
+<div id="app" class="hide">
+<h1>Harga &amp; stok</h1>
+<p class="n">Atur harga per 1M (Rupiah) dan stok tersedia (dalam M). 1B = 1000M. Toko dengan stok di bawah 10M otomatis tampil "Habis" di website.</p>
+<div id="list"></div>
+<div class="row" style="margin-bottom:14px">
+<button class="btn" id="save">Simpan draft</button>
+<button class="btn" id="dl">Unduh stores.json</button>
+</div>
+<div class="msg" id="m"></div>
+
+<div class="card">
+<b>Cara menerapkan ke website</b>
+<ol>
+<li>Ubah harga/stok di atas, lalu tekan <b>Unduh stores.json</b>.</li>
+<li>Upload file itu ke hosting, satu folder dengan <code>index.html</code>, timpa file lama.</li>
+<li>Website langsung memakai harga &amp; stok baru saat dibuka.</li>
+</ol>
+<p class="hint">Draft tersimpan di browser ini, jadi aman kalau halaman ditutup.</p>
+</div>
+
+<div class="card">
+<b>Impor / salin JSON</b>
+<label for="js">Isi stores.json</label>
+<textarea id="js" spellcheck="false"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn alt" id="imp">Muat dari teks</button><button class="btn alt" id="cp">Salin</button></div>
+</div>
+
+<div class="card">
+<b>Ganti password</b>
+<label for="np">Password baru (min. 6 karakter)</label>
+<input id="np" type="password" autocomplete="new-password">
+<div class="row" style="margin-top:10px"><button class="btn alt" id="chp">Ganti</button><button class="btn alt" id="out">Keluar</button></div>
+<div class="msg" id="pm"></div>
+<p class="hint">Catatan: password ini hanya pengunci tampilan di browser, bukan keamanan server. Data tidak berubah di website sebelum kamu upload stores.json, jadi pelanggan tidak bisa mengubah harga.</p>
+</div>
+</div>
+</main>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var K="om_admin_pw",D="om_admin_draft",SS="om_admin_ok";
+var DEF=[{n:"Toko Utama",rate:1500,stock:8200,active:true}];
+var data=[];
+function g(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function s(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function sg(k){try{return sessionStorage.getItem(k)}catch(e){return null}}
+function ss(k,v){try{sessionStorage.setItem(k,v)}catch(e){}}
+function hash(t){var h=5381;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return String(h)}
+function pwh(){return g(K)||hash("obito123")}
+function msg(el,t,c){$(el).className="msg "+(c||"");$(el).textContent=t}
+function fmt(m){return m>=1000?(m/1000).toLocaleString("id-ID",{maximumFractionDigits:2})+"B":m.toLocaleString("id-ID")+"M"}
+function load(){
+var d=g(D);
+if(d){try{data=JSON.parse(d).stores}catch(e){data=null}}
+if(!data||!data.length){
+data=DEF.map(function(x){return Object.assign({},x)});
+fetch("stores.json?"+Date.now()).then(function(r){return r.json()}).then(function(j){if(j&&j.stores&&!g(D)){data=j.stores;draw()}}).catch(function(){});
+}}
+function clean(){
+return data.map(function(x){return{n:String(x.n||"Toko").trim()||"Toko",rate:Math.max(0,Math.round(Number(x.rate)||0)),stock:Math.max(0,Math.round(Number(x.stock)||0)),active:x.active!==false}})}
+function out(){return JSON.stringify({updated:new Date().toISOString(),stores:clean()},null,2)}
+function draw(){
+if(data.length>1)data=data.slice(0,1);
+var L=$("list");L.innerHTML="";
+data.forEach(function(x,i){
+var c=document.createElement("div");c.className="card";
+var low=(Number(x.stock)||0)<10;
+c.innerHTML="<div class='top'><b>Toko "+(i+1)+"</b><span class='badge"+(low?" low":"")+"'>Stok: "+fmt(Number(x.stock)||0)+(low?" (Habis)":"")+"</span></div>"+
+"<label>Nama toko</label><input type='text' data-k='n' data-i='"+i+"'>"+
+"<div class='g'><div><label>Harga per 1M (Rp)</label><input type='number' min='0' step='50' inputmode='numeric' data-k='rate' data-i='"+i+"'></div>"+
+"<div><label>Stok (dalam M)</label><input type='number' min='0' step='10' inputmode='numeric' data-k='stock' data-i='"+i+"'></div></div>"+
+"<div class='row' style='margin-top:12px;justify-content:space-between'><label class='sw'><input type='checkbox' data-k='active' data-i='"+i+"'> Tampilkan di website</label></div>";
+L.appendChild(c);
+c.querySelector("[data-k=n]").value=x.n;
+c.querySelector("[data-k=rate]").value=x.rate;
+c.querySelector("[data-k=stock]").value=x.stock;
+c.querySelector("[data-k=active]").checked=x.active!==false});
+$("js").value=out()}
+$("list").addEventListener("input",function(e){
+var t=e.target,i=t.getAttribute("data-i");if(i===null)return;
+var k=t.getAttribute("data-k");
+data[i][k]=k==="active"?t.checked:(k==="n"?t.value:t.value);
+if(k==="stock"){var b=t.closest(".card").querySelector(".badge"),v=Number(t.value)||0;b.textContent="Stok: "+fmt(v)+(v<10?" (Habis)":"");b.className="badge"+(v<10?" low":"")}
+$("js").value=out()});
+$("list").addEventListener("click",function(e){
+var d=e.target.getAttribute("data-del");if(d===null)return;
+if(!confirm("Hapus "+data[d].n+"?"))return;
+data.splice(d,1);draw();msg("m","Toko dihapus. Jangan lupa simpan.","")});
+$("save").onclick=function(){s(D,out());msg("m","Draft tersimpan di browser ini.","ok")};
+$("dl").onclick=function(){
+s(D,out());
+var b=new Blob([out()],{type:"application/json"}),a=document.createElement("a");
+a.href=URL.createObjectURL(b);a.download="stores.json";document.body.appendChild(a);a.click();a.remove();
+msg("m","stores.json diunduh. Upload ke hosting untuk menerapkan.","ok")};
+$("imp").onclick=function(){
+try{var j=JSON.parse($("js").value);if(!j.stores||!j.stores.length)throw 0;data=j.stores;draw();msg("m","JSON berhasil dimuat.","ok")}
+catch(e){msg("m","Format JSON tidak valid.","err")}};
+$("cp").onclick=function(){
+$("js").select();
+try{navigator.clipboard.writeText($("js").value);msg("m","JSON disalin.","ok")}catch(e){document.execCommand&&document.execCommand("copy");msg("m","JSON disalin.","ok")}};
+function enter(){$("login").classList.add("hide");$("app").classList.remove("hide");$("who").textContent="Owner";load();draw()}
+$("go").onclick=function(){
+if(hash($("pw").value)===pwh()){ss(SS,"1");enter()}else msg("lm","Password salah.","err")};
+$("pw").addEventListener("keydown",function(e){if(e.key==="Enter")$("go").click()});
+$("chp").onclick=function(){
+var p=$("np").value;
+if(p.length<6){msg("pm","Minimal 6 karakter.","err");return}
+s(K,hash(p));$("np").value="";msg("pm","Password diganti.","ok")};
+$("out").onclick=function(){ss(SS,"");location.reload()};
+if(sg(SS)==="1")enter();
+})();
+</script>
+</body>
+</html>
